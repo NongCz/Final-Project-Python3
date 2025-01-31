@@ -18,7 +18,7 @@ class ExpenseTracker:
             self.sheets_sync.setup_spreadsheet()
 
     def init_database(self):
-       """Initialize SQLite database and create necessary tables."""
+        """Initialize SQLite database and create necessary tables."""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute('''
@@ -101,29 +101,8 @@ class ExpenseTracker:
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute('''
-<<<<<<< HEAD:expense_tracker/database.py
                 SELECT 
                     COALESCE(SUM(CASE WHEN transaction_type = 'income' THEN amount ELSE -amount END), 0)
                 FROM transactions
             ''')
             return Decimal(cursor.fetchone()[0])
-=======
-                SELECT amount, transaction_type, category, description, date 
-                FROM transactions 
-                WHERE date BETWEEN ? AND ?
-            ''', (start_date.isoformat(), end_date.isoformat()))
-
-            transactions = []
-            for row in cursor.fetchall():
-                amount, transaction_type, category, description, date = row
-                transaction = Transaction(
-                    amount=Decimal(amount),
-                    transaction_type=TransactionType(transaction_type),
-                    category=Category(category),
-                    description=description,
-                    date=datetime.fromisoformat(date)
-                )
-                transactions.append(transaction)
-
-        return transactions
->>>>>>> 85a03a5 (Minor change):expense_tracker/expense_tracker.py
