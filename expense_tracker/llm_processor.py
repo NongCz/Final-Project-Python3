@@ -1,47 +1,3 @@
-# File: main.py
-from decimal import Decimal
-from datetime import datetime
-from models import Transaction, TransactionType, Category
-from expense_tracker import ExpenseTracker
-
-def main():
-    SPREADSHEET_ID = "1hTxKJXnNuhTwOFWnjhjSnnADfaoBNO-i9wQO-nXxEYs"
-    
-    # Initialize the tracker
-    tracker = ExpenseTracker(spreadsheet_id=SPREADSHEET_ID)
-    
-    # Example transactions
-    transactions = [
-        Transaction(
-            amount=Decimal("1000.00"),
-            transaction_type=TransactionType.INCOME,
-            category=Category.SALARY,
-            description="Monthly salary",
-            date=datetime.now()
-        ),
-        Transaction(
-            amount=Decimal("25.50"),
-            transaction_type=TransactionType.EXPENSE,
-            category=Category.FOOD,
-            description="Lunch at cafe",
-            date=datetime.now()
-        )
-    ]
-    
-    # Add transactions
-    for transaction in transactions:
-        transaction_id = tracker.add_transaction(transaction)
-        print(f"Added transaction {transaction_id}")
-    
-    # Show balance
-    balance = tracker.get_balance()
-    print(f"Current balance: ${balance:.2f}")
-
-if __name__ == "__main__":
-    main()
-
-
-
 from typing import Optional, List
 from decimal import Decimal
 from datetime import datetime
@@ -63,10 +19,6 @@ class LLMProcessor:
         - amount: a number
         - category: one of {[c.value for c in Category]}
         - description: short summary
-
-        Example:
-        Input: "Spent $50 on groceries at Walmart"
-        Output: {{"type": "expense", "amount": 50, "category": "food", "description": "Groceries at Walmart"}}
         """
 
         try:    
@@ -74,6 +26,9 @@ class LLMProcessor:
                 model="mistral-medium",
                 messages=[{"role": "user", "content": prompt}]
             )
+            
+            # Print the raw response for debugging
+            print("Raw LLM response:", response)
 
             try:
                 parsed = json.loads(response.choices[0].message.content)
@@ -91,6 +46,8 @@ class LLMProcessor:
         except Exception as e:
             print(f"❌ Error processing transaction: {e}")
             return None
+
+
 
     def get_insights(self, transactions: List[Transaction]) -> str:
         """Generate financial insights based on spending patterns."""
